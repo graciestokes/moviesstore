@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Movie, Review
 from django.contrib.auth.decorators import login_required
+
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
@@ -34,6 +35,19 @@ def create_review(request, id):
         return redirect('movies.show', id=id)
     else:
         return redirect('movies.show', id=id)
+
+# like_review add likes
+@login_required
+def like_review(request, id, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    if request.user in review.likes.all():
+        review.likes.remove(request.user) # removing the user from the relationship many to many
+    else:
+        review.likes.add(request.user) # adding the user from the relationship many to many
+    review.save()
+    return redirect('movies.show', id=id)
+
+
 
 @login_required
 def edit_review(request, id, review_id):

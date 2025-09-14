@@ -36,6 +36,25 @@
                         <h6 class="card-subtitle mb-2 text-muted"> {{ review.date }}
                         </h6>
                         <p class="card-text">{{ review.comment }}</p>
+
+                        <!--text for like--> 
+                        <p class="card-text">❤️ {{ review.likes.count }}</p>
+                        
+                        <!--like button--> 
+
+                        {% if user.is_authenticated %}
+
+                            <!--if user has already liked--> 
+                            {% if user in review.likes.all %}
+                                <a class="btn btn-danger" href="{% url 'movies.like_review' id=template_data.movie.id review_id=review.id %}">Unlike
+                                </a>
+                            <!--if user has not liked--> 
+                            {% else %}
+                                <a class="btn btn-success" href="{% url 'movies.like_review' id=template_data.movie.id review_id=review.id %}">Like
+                                </a>
+                            {% endif %}
+                        {% endif %}
+
                         {% if user.is_authenticated and user == review.user %}
                         <a class="btn btn-primary" href="{% url 'movies.edit_review' id=template_data.movie.id review_id=review.id %}">Edit
                         </a>

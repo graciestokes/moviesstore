@@ -7,6 +7,7 @@ class Movie(models.Model):
     price = models.IntegerField()
     description = models.TextField()
     image = models.ImageField(upload_to='movie_images/')
+    rating = models.IntegerField(default = 0)
     def __str__(self):
         return str(self.id) + ' - ' + self.name
 
@@ -18,6 +19,7 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     #many to many field relates users to likes. you use by adding request.user or removing request.user
     likes = models.ManyToManyField(User, related_name="liked_reviews", blank=True)
+    stars = models.IntegerField(default = 0)
 
     def __str__(self):
         return str(self.id) + ' - ' + self.movie.name

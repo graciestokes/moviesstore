@@ -9,6 +9,8 @@
                 <form method="POST">
                     {% csrf_token %}
                     <p>
+                        <label for="stars">Stars:</label>
+                        <textarea name="stars" required class="form-control" id="stars">{{template_data.review.stars }}</textarea>
                         <label for="comment">Comment:</label>
                         <textarea name="comment" required class="form-control" id="comment">{{template_data.review.comment }}</textarea>
                     </p>

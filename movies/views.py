@@ -14,12 +14,28 @@ def index(request):
     template_data['movies'] = movies
     return render(request, 'movies/index.html', {'template_data': template_data})
 
+def calculate_rating(request, id):
+    movie = Movie.objects.get(id=id)
+    reviews = Review.objects.filter(movie=movie)
+    
+
+
 def show(request, id):
     movie = Movie.objects.get(id=id)
     reviews = Review.objects.filter(movie=movie)
     template_data = {}
     template_data['title'] = movie.name
     template_data['movie'] = movie
+    average = 0.0;
+    num_ratings = 0;
+    for review in reviews:
+        average += review.stars;
+        num_ratings += 1;
+    average /= num_ratings
+    movie.rating = average
+    review.save()
+
+    template_data['rating'] = movie.rating
     template_data['reviews'] = reviews
     return render(request, 'movies/show.html', {'template_data': template_data})
 
@@ -28,6 +44,7 @@ def create_review(request, id):
     if request.method == 'POST' and request.POST['comment']!= '':
         movie = Movie.objects.get(id=id)
         review = Review()
+        review.stars = request.POST['stars']
         review.comment = request.POST['comment']
         review.movie = movie
         review.user = request.user

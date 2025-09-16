@@ -9,8 +9,15 @@ class Movie(models.Model):
     image = models.ImageField(upload_to='movie_images/')
     rating = models.IntegerField(default = 0)
     watch_list = models.ManyToManyField(User, related_name="watch_listed_movies", blank=True)
+    # Inventory field
+    amount_left = models.PositiveIntegerField(default=0, help_text="Number of copies available for purchase")
     def __str__(self):
         return str(self.id) + ' - ' + self.name
+
+    @property
+    def is_in_stock(self):
+        """Check if movie is still available for purchase"""
+        return self.amount_left > 0
 
 class Review(models.Model):
     id = models.AutoField(primary_key=True)

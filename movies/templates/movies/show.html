@@ -10,6 +10,31 @@
                 <p><b>Description:</b> {{template_data.movie.description }}</p>
                 <p><b>Average Rating:</b> {{template_data.movie.rating }} stars</p>
                 <p><b>Price:</b> ${{template_data.movie.price }}</p>
+                
+                <!-- Stock information -->
+                <p><b>Availability:</b>
+                {% if template_data.movie.amount_left > 0 %}
+                    {% if template_data.movie.amount_left <= 5 %}
+                        <span class="text-warning">⚠️ Only {{ template_data.movie.amount_left }} left in stock!</span>
+                    {% else %}
+                        <span class="text-success">✅ In Stock ({{ template_data.movie.amount_left }} available)</span>
+                    {% endif %}
+                {% else %}
+                    <span class="text-danger">❌ Out of Stock</span>
+                {% endif %}
+                </p>
+                
+                <!-- Display any messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                {% if template_data.movie.amount_left > 0 %}
                 <p class="card-text">
                 <form method="post" action="{% url 'cart.add' id=template_data.movie.id %}">
                     <div class="row">
@@ -17,7 +42,7 @@
                         <div class="col-auto">
                             <div class="input-group col-auto">
                                 <div class="input-group-text">Quantity</div>
-                                <input type="number" min="1" max="10" class="form-control quantity-input"
+                                <input type="number" min="1" max="{{ template_data.movie.amount_left }}" class="form-control quantity-input"
                                     name="quantity" value="1">
                             </div>
                         </div>
@@ -27,7 +52,7 @@
                         
                         {% if user.is_authenticated %}
                         <div class="col-auto">
-                            <!--if user has not added to watchlist-->
+                            <!--if user has added to watchlist-->
                             {% if user in template_data.movie.watch_list.all %}
                             <a class="btn btn-danger"
                                 href="{% url 'movies.add_watchlist' id=template_data.movie.id %}">Remove from Watch List
@@ -35,7 +60,7 @@
                             <!--if user has not added to watchlist-->
                             {% else %}
                             <a class="btn btn-success"
-                                href="{% url 'movies.add_watchlist' id=template_data.movie.id %}">Add to Wacth List
+                                href="{% url 'movies.add_watchlist' id=template_data.movie.id %}">Add to Watch List
                             </a>
                             {% endif %}
                         </div>
@@ -43,6 +68,28 @@
                     </div>
                 </form>
                 </p>
+                {% else %}
+                <!-- Out of stock - only show watchlist option -->
+                {% if user.is_authenticated %}
+                <div class="alert alert-info">
+                    <p>This movie is currently out of stock. Add it to your watch list to be notified when it's available again!</p>
+                    {% if user in template_data.movie.watch_list.all %}
+                    <a class="btn btn-danger"
+                        href="{% url 'movies.add_watchlist' id=template_data.movie.id %}">Remove from Watch List
+                    </a>
+                    {% else %}
+                    <a class="btn btn-success"
+                        href="{% url 'movies.add_watchlist' id=template_data.movie.id %}">Add to Watch List
+                    </a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    This movie is currently out of stock. Please check back later!
+                </div>
+                {% endif %}
+                {% endif %}
+                
                 <h2>Reviews</h2>
                 <hr />
                 <ul class="list-group">

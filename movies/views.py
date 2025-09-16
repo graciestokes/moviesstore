@@ -26,17 +26,17 @@ def show(request, id):
     template_data = {}
     template_data['title'] = movie.name
     template_data['movie'] = movie
-    average = 0.0;
-    num_ratings = 0;
+    average = 0.0
+    num_ratings = 0
     for review in reviews:
-        average += review.stars;
-        num_ratings += 1;
-    if num_ratings is 0:
-        movie.rating = 0;
+        average += review.stars
+        num_ratings += 1
+    if num_ratings == 0:
+        movie.rating = 0
     else:
         average /= num_ratings
         movie.rating = average
-    review.save()
+    movie.save()
 
     template_data['rating'] = movie.rating
     template_data['reviews'] = reviews

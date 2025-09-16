@@ -8,6 +8,7 @@ class Movie(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='movie_images/')
     rating = models.IntegerField(default = 0)
+    watch_list = models.ManyToManyField(User, related_name="watch_listed_movies", blank=True)
     def __str__(self):
         return str(self.id) + ' - ' + self.name
 

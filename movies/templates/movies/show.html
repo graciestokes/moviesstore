@@ -24,6 +24,22 @@
                         <div class="col-auto">
                             <button class="btn bg-dark text-white" type="submit">Add to cart</button>
                         </div>
+                        
+                        {% if user.is_authenticated %}
+                        <div class="col-auto">
+                            <!--if user has not added to watchlist-->
+                            {% if user in template_data.movie.watch_list.all %}
+                            <a class="btn btn-danger"
+                                href="{% url 'movies.add_watchlist' id=template_data.movie.id %}">Remove from Watch List
+                            </a>
+                            <!--if user has not added to watchlist-->
+                            {% else %}
+                            <a class="btn btn-success"
+                                href="{% url 'movies.add_watchlist' id=template_data.movie.id %}">Add to Wacth List
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                     </div>
                 </form>
                 </p>

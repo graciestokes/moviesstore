@@ -89,3 +89,13 @@ def delete_review(request, id, review_id):
     review = get_object_or_404(Review, id=review_id, user=request.user)
     review.delete()
     return redirect('movies.show', id=id)
+
+@login_required
+def add_watchlist(request, id):
+    movie = Movie.objects.get(id=id)
+    if request.user in movie.watch_list.all():
+        movie.watch_list.remove(request.user) # removing the user from the relationship many to many
+    else:
+        movie.watch_list.add(request.user) # adding the user from the relationship many to many
+    movie.save()
+    return redirect('movies.show', id=id)

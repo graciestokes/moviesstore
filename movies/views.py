@@ -31,8 +31,11 @@ def show(request, id):
     for review in reviews:
         average += review.stars;
         num_ratings += 1;
-    average /= num_ratings
-    movie.rating = average
+    if num_ratings is 0:
+        movie.rating = 0;
+    else:
+        average /= num_ratings
+        movie.rating = average
     review.save()
 
     template_data['rating'] = movie.rating

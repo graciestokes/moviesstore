@@ -8,7 +8,7 @@
                 <h2>{{ template_data.movie.name }}</h2>
                 <hr />
                 <p><b>Description:</b> {{template_data.movie.description }}</p>
-                <p><b>Average Rating:</b> {{template_data.movie.rating }} stars</p>
+                <!-- <p><b>Average Rating:</b> {{template_data.movie.rating }} stars</p> -->
                 <p><b>Price:</b> ${{template_data.movie.price }}</p>
                 
                 <!-- Stock information -->
@@ -101,7 +101,7 @@
                         <h6 class="card-subtitle mb-2 text-muted"> {{ review.date }}
                         </h6>
 
-                        <p class="card-text">{{ review.stars }} stars</p>
+                        <!-- <p class="card-text">{{ review.stars }} stars</p> -->
 
                         <p class="card-text">{{ review.comment }}</p>
 
@@ -147,54 +147,6 @@
                                         action="{% url 'movies.create_review' id=template_data.movie.id %}">
                                         {%csrf_token%}
                                         <p>
-                                            <style>
-                                                .star-rating {
-                                                    display: flex;
-                                                    flex-direction: row-reverse;
-                                                    /* so 5 is on the left */
-                                                    justify-content: flex-start;
-                                                }
-
-                                                .star-rating input {
-                                                    display: none;
-                                                    /* hide the radio buttons */
-                                                }
-
-                                                .star-rating label {
-                                                    font-size: 2rem;
-                                                    color: lightgray;
-                                                    cursor: pointer;
-                                                    transition: color 0.2s;
-                                                }
-
-                                                /* Hover effect */
-                                                .star-rating label:hover,
-                                                .star-rating label:hover~label {
-                                                    color: gold;
-                                                }
-
-                                                /* Selected effect */
-                                                .star-rating input:checked~label {
-                                                    color: gold;
-                                                }
-                                            </style>
-                                            <label for="stars">Stars:</label>
-                                        <div class="star-rating">
-                                            <input type="radio" id="star5" name="stars" value="5" required>
-                                            <label for="star5">⭐</label>
-
-                                            <input type="radio" id="star4" name="stars" value="4">
-                                            <label for="star4">⭐</label>
-
-                                            <input type="radio" id="star3" name="stars" value="3">
-                                            <label for="star3">⭐</label>
-
-                                            <input type="radio" id="star2" name="stars" value="2">
-                                            <label for="star2">⭐</label>
-
-                                            <input type="radio" id="star1" name="stars" value="1">
-                                            <label for="star1">⭐</label>
-                                        </div>
                                         <label for="comment">Comment:</label>
                                         <textarea name="comment" required class="form-control" id="comment"></textarea>
                                         </p>

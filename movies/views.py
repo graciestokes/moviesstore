@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+import math
 
 from .models import Movie, Review
 from django.contrib.auth.decorators import login_required
@@ -22,17 +23,29 @@ def show(request, id):
     template_data = {}
     template_data['title'] = movie.name
     template_data['movie'] = movie
+    average = 0.0
+    num_ratings = 0
+    for review in reviews:
+        average += review.stars
+        num_ratings += 1
+    if num_ratings == 0:
+        movie.rating = 0
+    else:
+        movie.rating = math.ceil((average / num_ratings)*100)/100
+
     movie.save()
 
     template_data['reviews'] = reviews
+    template_data['rating'] = movie.rating
     return render(request, 'movies/show.html', {'template_data': template_data})
 
 @login_required
 def create_review(request, id):
-    if request.method == 'POST' and request.POST['comment']!= '':
+    if request.method == 'POST':
         movie = Movie.objects.get(id=id)
         review = Review()
-        review.comment = request.POST['comment']
+        review.comment = request.POST.get('comment','')
+        review.stars = request.POST['stars']
         review.movie = movie
         review.user = request.user
         review.save()

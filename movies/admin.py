@@ -4,11 +4,11 @@ from .models import Movie, Review
 class MovieAdmin(admin.ModelAdmin):
     ordering = ['name']
     search_fields = ['name']
-    list_display = ['name', 'price', 'amount_left', 'stock_status']
+    list_display = ['name', 'price', 'amount_left', 'stock_status', 'rating']
     list_filter = ['amount_left']
     
     # Add amount_left to the fields
-    fields = ['name', 'description', 'price', 'image', 'amount_left', 'watch_list']
+    fields = ['name', 'description', 'price', 'image', 'amount_left', 'watch_list', 'rating']
     
     # Make watch_list field use a more user-friendly widget
     filter_horizontal = ['watch_list']

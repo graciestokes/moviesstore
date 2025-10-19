@@ -14,6 +14,28 @@
                             <button type="submit"
                                 class="btn bg-dark text-white">Sign Up
                             </button>
+
+                            <button type="button" id="get-location" class="btn btn-secondary mt-2">
+                                Use My Location
+                            </button>
+
+                            <script>
+                                const getLocation = document.getElementById("get-location");
+                                getLocation.addEventListener("click", () => {
+                                    if (navigator.geolocation) {
+                                        navigator.geolocation.getCurrentPosition((position) => {
+                                            document.getElementById("id_latitude").value = position.coords.latitude.toFixed(6);
+                                            document.getElementById("id_longitude").value = position.coords.longitude.toFixed(6);
+                                        }, (error) => {
+                                            alert("Unable to retrieve location: " + error.message);
+                                        });
+                                    } else {
+                                        alert("Geolocation is not supported by this browser.");
+                                    }
+                                });
+                            </script>
+
+
                         </form>
                     </div>
                 </div>

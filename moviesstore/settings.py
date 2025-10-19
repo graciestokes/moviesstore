@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'topcomments',
     'watchlist',
     'petitions',
+    'map',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block content %}
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTxel7562WG7f4mzuG8dPoHNvJPzuTGiQ&libraries=maps,marker"></script>
+
+<div style="padding: 1rem">
+    <h1>Local Popularity Map</h1>
+    <p id="top-trending"></p>
+</div>
+<div id="map" style="width: 100vw; height: 80vh;"></div>
+
+<script defer>
+    let map;
+
+    const items = JSON.parse(`{{ template_data.items|safe }}`);
+
+    function getTrendingMoviesForRegion(items, eastBound, westBound) {
+        const movieNameCountMap = new Map();
+        for (const item of items) {
+            if (item.longitude < eastBound && item.latitude > westBound) {
+                // item is within region
+                movieNameCountMap.set(item.name, (movieNameCountMap.get(item.name) ?? 0) + 1);
+            }
+        }
+        const result = [];
+        for (const [name, count] of movieNameCountMap.entries()) {
+            result.push({ name, count });
+        }
+        result.sort((a, b) => b.count - a.count);
+        return result;
+    }
+
+    async function initMap() {
+        const { Map } = await google.maps.importLibrary("maps");
+
+        map = new Map(document.getElementById("map"), {
+            center: { lat: 39.8283, lng: -96 },
+            zoom: 4.5,
+            mapId: "mapId"
+        });
+
+        const regions = [
+            {
+                color: "#FF0000",
+                name: "West Coast",
+                bounds: {
+                    north: 25,
+                    south: 50,
+                    east: -106,
+                    west: -125,
+                }
+            },
+            {
+                color: "#00FF00",
+                name: "Central US",
+                bounds: {
+                    north: 25,
+                    south: 50,
+                    east: -87,
+                    west: -106,
+                }
+            },
+            {
+                color: "#0000FF",
+                name: "East Coast",
+                bounds: {
+                    north: 25,
+                    south: 50,
+                    east: -67,
+                    west: -87,
+                }
+            }
+        ]
+
+        const allInfoWindows = [];
+        let maxMovie = null;
+        let maxCount = 0;
+        for (const region of regions) {
+            const rectangle = new google.maps.Rectangle({
+                strokeColor: region.color,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: region.color,
+                fillOpacity: 0.15,
+                map,
+                bounds: region.bounds,
+            });
+
+            const trendingMovies = getTrendingMoviesForRegion(items, region.bounds.east, region.bounds.west);
+            for (const movie of trendingMovies) {
+                if (movie.count > maxCount) {
+                    maxCount = movie.count;
+                    maxMovie = { movie, region: region.name };
+                }
+            }
+            const middleLat = (region.bounds.south - region.bounds.north) / 2 + region.bounds.north;
+            const middleLng = (region.bounds.west - region.bounds.east) / 2 + region.bounds.east;
+            const listItems = "<ol>" + trendingMovies.map(({ name, count }) => `<li style="font-size: 1.5em">${name} - ${count} purchase${count != 1 ? "s" : ""}</li>`) + "</ol>";
+            const content = "<h2>Trending Movies In This Region</h2>" + (trendingMovies.length > 0 ? listItems : "<p>No trending movies in this region</p>");
+            const infowindow = new google.maps.InfoWindow({
+                content,
+                position: { lat: middleLat, lng: middleLng },
+            });
+            allInfoWindows.push(infowindow);
+            rectangle.addListener("click", () => {
+                for (const iw of allInfoWindows) {
+                    if (iw.isOpen) {
+                        iw.close();
+                    }
+                }
+
+                infowindow.open({
+                    map,
+                });
+            });
+        }
+
+        if (maxMovie != null) {
+            const topTrending = document.getElementById("top-trending");
+            topTrending.textContent = `${maxMovie.movie.name} is the most purchased movie in the ${maxMovie.region} region, making it the top trending movie with ${maxMovie.movie.count} purchase${maxMovie.movie.count != 1 ? "s" : ""}!`
+        }
+
+        for (const item of items) {
+            const img = document.createElement('img');
+            img.src = item.img_url;
+            img.style.maxWidth = "25px";
+            const imgPinElement = new google.maps.marker.PinElement({
+                glyph: img,
+                scale: 1.5,
+            });
+            new google.maps.marker.AdvancedMarkerElement({
+                map,
+                position: { lat: item.latitude, lng: item.longitude },
+                content: imgPinElement.element,
+            });
+        }
+    }
+
+    initMap();
+</script>
+{% endblock content %}

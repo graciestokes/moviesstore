@@ -28,5 +28,6 @@ urlpatterns = [
     path('topcomments/', include('topcomments.urls')),
     path('watchlist/', include('watchlist.urls')),
     path('petitions/', include('petitions.urls')),
+    path('map/', include('map.urls'))
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

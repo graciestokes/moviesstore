@@ -37,6 +37,7 @@
                         <a class="nav-link" href="{% url 'movies.index' %}">Movies</a>
                         <a class="nav-link" href="{% url 'cart.index' %}">Cart</a>
                         <a class="nav-link" href="{% url 'topcomments.index' %}">Leader Boards</a>
+                        <a class="nav-link" href="{% url 'map.index' %}">Local Popularity Map</a>
                         {% if user.is_authenticated %}
                         <a class="nav-link" href="{% url 'watchlist.index' %}">My Watch List</a>
                         <a class="nav-link" href="{% url 'petitions.index' %}">Petitions</a>

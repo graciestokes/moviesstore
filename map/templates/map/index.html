@@ -14,10 +14,11 @@
 
     const items = JSON.parse(`{{ template_data.items|safe }}`);
 
-    function getTrendingMoviesForRegion(items, eastBound, westBound) {
+    function getTrendingMoviesForRegion(items, bounds) {
         const movieNameCountMap = new Map();
         for (const item of items) {
-            if (item.longitude < eastBound && item.latitude > westBound) {
+            if (item.longitude >= bounds.west && item.longitude <= bounds.east &&
+                item.latitude >= bounds.south && item.latitude <= bounds.north) {
                 // item is within region
                 movieNameCountMap.set(item.name, (movieNameCountMap.get(item.name) ?? 0) + 1);
             }
@@ -44,8 +45,8 @@
                 color: "#FF0000",
                 name: "West Coast",
                 bounds: {
-                    north: 25,
-                    south: 50,
+                    north: 50,
+                    south: 25,
                     east: -106,
                     west: -125,
                 }
@@ -54,8 +55,8 @@
                 color: "#00FF00",
                 name: "Central US",
                 bounds: {
-                    north: 25,
-                    south: 50,
+                    north: 50,
+                    south: 25,
                     east: -87,
                     west: -106,
                 }
@@ -64,8 +65,8 @@
                 color: "#0000FF",
                 name: "East Coast",
                 bounds: {
-                    north: 25,
-                    south: 50,
+                    north: 50,
+                    south: 25,
                     east: -67,
                     west: -87,
                 }
@@ -86,15 +87,15 @@
                 bounds: region.bounds,
             });
 
-            const trendingMovies = getTrendingMoviesForRegion(items, region.bounds.east, region.bounds.west);
+            const trendingMovies = getTrendingMoviesForRegion(items, region.bounds);
             for (const movie of trendingMovies) {
                 if (movie.count > maxCount) {
                     maxCount = movie.count;
                     maxMovie = { movie, region: region.name };
                 }
             }
-            const middleLat = (region.bounds.south - region.bounds.north) / 2 + region.bounds.north;
-            const middleLng = (region.bounds.west - region.bounds.east) / 2 + region.bounds.east;
+            const middleLat = (region.bounds.north + region.bounds.south) / 2;
+            const middleLng = (region.bounds.east + region.bounds.west) / 2;
             const listItems = "<ol>" + trendingMovies.map(({ name, count }) => `<li style="font-size: 1.5em">${name} - ${count} purchase${count != 1 ? "s" : ""}</li>`) + "</ol>";
             const content = "<h2>Trending Movies In This Region</h2>" + (trendingMovies.length > 0 ? listItems : "<p>No trending movies in this region</p>");
             const infowindow = new google.maps.InfoWindow({
